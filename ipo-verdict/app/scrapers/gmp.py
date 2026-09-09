@@ -75,26 +75,33 @@ def fetch_gmp(company_name: str) -> Optional[Dict[str, Any]]:
 
     try:
         with sync_playwright() as pw:
-            browser = pw.chromium.launch(headless=True)
-            page = browser.new_page()
-            page.goto(GMP_URL, timeout=30000, wait_until="domcontentloaded")
+            browser = pw.chromium.launch(
+                headless=True,
+                args=["--disable-dev-shm-usage", "--disable-gpu", "--no-sandbox"],
+            )
+            try:
+                page = browser.new_page()
+                page.goto(GMP_URL, timeout=30000, wait_until="domcontentloaded")
 
-            data: List[Dict[str, Any]] = []
-            for _ in range(10):  # poll up to ~25s for the async table fill-in
-                time.sleep(2.5)
-                rows = page.query_selector_all("table tbody tr")
-                candidates = [
-                    [c.inner_text().strip() for c in row.query_selector_all("td")]
-                    for row in rows
-                ]
-                candidates = [c for c in candidates if c]
-                if candidates and candidates[0][0].strip().lower() not in (
-                    "no data available", "loading..."
-                ):
-                    data = candidates
-                    break
-
-            browser.close()
+                data: List[Dict[str, Any]] = []
+                for _ in range(10):  # poll up to ~25s for the async table fill-in
+                    time.sleep(2.5)
+                    rows = page.query_selector_all("table tbody tr")
+                    candidates = [
+                        [c.inner_text().strip() for c in row.query_selector_all("td")]
+                        for row in rows
+                    ]
+                    candidates = [c for c in candidates if c]
+                    if candidates and candidates[0][0].strip().lower() not in (
+                        "no data available", "loading..."
+                    ):
+                        data = candidates
+                        break
+            finally:
+                # Always close the browser, even if the scrape above timed
+                # out or errored -- otherwise the Chromium process leaks
+                # and keeps eating memory until the container restarts.
+                browser.close()
     except Exception as exc:  # noqa: BLE001 - see module docstring
         logger.warning("GMP fetch failed: %s", exc)
         return None
