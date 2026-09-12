@@ -152,11 +152,49 @@ def calculate_status(
 
 
 
+def is_subscription_consistent(row):
+    """Return True when overall subscription is compatible with categories.
+
+    Overall subscription is a weighted result of the QIB, NII and Retail
+    categories. When at least two category values are available, overall must
+    lie between the smallest and largest category value. This rejects scraper
+    rows where the overall figure was read from the wrong table column.
+    """
+    overall = getattr(row, "sub_overall", None)
+    if overall is None:
+        return True
+
+    try:
+        overall = float(overall)
+    except (TypeError, ValueError):
+        return False
+
+    categories = []
+    for field in ("sub_qib", "sub_nii", "sub_retail"):
+        value = getattr(row, field, None)
+        if value is None:
+            continue
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            continue
+        if number >= 0:
+            categories.append(number)
+
+    if len(categories) < 2:
+        return True
+
+    low = min(categories)
+    high = max(categories)
+    return low <= overall <= high
+
+
 def is_valid_ipo_snapshot(row):
     """Return True when a snapshot contains enough data to represent an IPO.
 
-    A newer scraper row can occasionally be incomplete. We should not let that
-    incomplete row replace an older, complete snapshot for the same IPO.
+    A newer scraper row can occasionally be incomplete or contain an
+    inconsistent subscription value. We should not let that row replace an
+    older, complete and internally consistent snapshot for the same IPO.
     """
     if row.price is None:
         return False
@@ -185,6 +223,9 @@ def is_valid_ipo_snapshot(row):
     company_text = str(getattr(row, "company", "") or "").strip().lower()
     size_text = str(getattr(row, "ipo_size", "") or "").strip().lower()
     if company_text and size_text and company_text == size_text:
+        return False
+
+    if not is_subscription_consistent(row):
         return False
 
     return bool(has_date and (has_size or has_lot))
@@ -474,6 +515,8 @@ def ipo_history(company: str):
             .all()
         )
 
+        rows = [row for row in rows if is_valid_ipo_snapshot(row)]
+
         if not rows:
             raise HTTPException(
                 404,
@@ -484,48 +527,17 @@ def ipo_history(company: str):
         # GMP HISTORY
         # -------------------------------------------------
 
-        # A scraper can return GMP=0 when the live GMP field was not
-        # actually available. If the same IPO has a real non-zero GMP
-        # elsewhere in its history and the zero row has no GMP timestamp,
-        # do not let that incomplete row overwrite the usable GMP history.
-        usable_gmp_rows = [
-            r
+        gmp_points = [
+            {
+                "value": r.gmp_value,
+                "pct": r.gmp_pct,
+                "fetched_at": r.fetched_at.isoformat(),
+            }
             for r in rows
             if r.gmp_value is not None
             and r.price is not None
             and r.price > 0
         ]
-
-        has_non_zero_gmp = False
-        for r in usable_gmp_rows:
-            try:
-                if float(r.gmp_value) != 0:
-                    has_non_zero_gmp = True
-                    break
-            except (TypeError, ValueError):
-                continue
-
-        gmp_points = []
-        for r in usable_gmp_rows:
-            try:
-                gmp_number = float(r.gmp_value)
-            except (TypeError, ValueError):
-                continue
-
-            if (
-                gmp_number == 0
-                and has_non_zero_gmp
-                and not getattr(r, "gmp_as_of", None)
-            ):
-                continue
-
-            gmp_points.append(
-                {
-                    "value": r.gmp_value,
-                    "pct": r.gmp_pct,
-                    "fetched_at": r.fetched_at.isoformat(),
-                }
-            )
 
         # -------------------------------------------------
         # SUBSCRIPTION HISTORY
