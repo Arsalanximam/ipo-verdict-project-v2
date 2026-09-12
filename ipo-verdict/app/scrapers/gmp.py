@@ -1275,6 +1275,11 @@ def _is_valid_ipo_row(
     if not company:
         return False
 
+    # Reject exchange/institution labels that are not IPO companies.
+    # This prevents the live GMP table from creating a false "NSE" IPO.
+    if company.upper() == "NSE":
+        return False
+
     has_date = any(
         row.get(key)
         for key in (
