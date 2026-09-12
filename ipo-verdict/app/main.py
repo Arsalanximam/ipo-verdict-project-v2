@@ -745,20 +745,9 @@ def get_ipo(company: str):
         )
 
     try:
-        # Keep the existing refresh/cache behaviour. This makes sure the
-        # analysis page can still trigger the live scraper when required.
-        refreshed = get_or_refresh(company.strip())
-
-        if not refreshed:
-            raise HTTPException(
-                404,
-                "IPO not found.",
-            )
-
-        # The dashboard already proves that the database contains the full
-        # IPO snapshot (price, dates, lot size, subscription, etc.). The
-        # single-IPO service result can occasionally be a partial scraper row,
-        # so select the newest COMPLETE snapshot for this company.
+        # Read the newest complete database snapshot first. The scheduler
+        # already keeps PostgreSQL updated, so Analyze must not block on a
+        # live browser scrape before showing the available data.
         normalized = company.strip().lower()
         db = SessionLocal()
         try:
@@ -781,10 +770,43 @@ def get_ipo(company: str):
                 row = candidate
                 break
 
-        # Fallback to the refreshed ORM object if the database lookup cannot
-        # find a complete historical row.
+        # Only scrape live when the requested IPO is not already available
+        # as a complete database snapshot. This prevents Analyze from waiting
+        # several minutes when the upstream GMP site is slow or unavailable.
         if row is None:
-            row = refreshed
+            refreshed = get_or_refresh(company.strip())
+            if not refreshed:
+                raise HTTPException(
+                    404,
+                    "IPO not found.",
+                )
+
+            db = SessionLocal()
+            try:
+                rows = (
+                    db.query(IPOSnapshot)
+                    .filter(
+                        IPOSnapshot.normalized_name == normalized
+                    )
+                    .order_by(
+                        IPOSnapshot.fetched_at.desc()
+                    )
+                    .all()
+                )
+            finally:
+                db.close()
+
+            for candidate in rows:
+                if is_valid_ipo_snapshot(candidate):
+                    row = candidate
+                    break
+
+            if row is None:
+                row = refreshed
+
+        # The dashboard already proves that the database contains the full
+        # IPO snapshot (price, dates, lot size, subscription, etc.). The
+        # The selected row is the newest complete snapshot available.
 
         status = calculate_status(
             row.open_date,
