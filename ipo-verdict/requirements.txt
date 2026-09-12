@@ -10,3 +10,4 @@ anthropic==0.39.0
 pydantic==2.9.2
 playwright==1.47.0
 rapidfuzz==3.10.1
+psycopg2-binary
