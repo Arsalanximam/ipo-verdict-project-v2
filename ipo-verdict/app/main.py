@@ -152,6 +152,41 @@ def calculate_status(
 
 
 
+
+def is_subscription_consistent(row):
+    """Return True when overall subscription is mathematically compatible
+    with the available category subscription values.
+
+    Overall subscription is a weighted average of the QIB, NII and Retail
+    category subscription levels, so when category values are present, the
+    overall value must fall between the smallest and largest category value.
+    This rejects scraper rows where the overall field was parsed from the
+    wrong table column.
+    """
+    overall = getattr(row, "sub_overall", None)
+    categories = []
+
+    for field in ("sub_qib", "sub_nii", "sub_retail"):
+        value = getattr(row, field, None)
+        if value is None:
+            continue
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            continue
+        if number >= 0:
+            categories.append(number)
+
+    if overall is None or len(categories) < 2:
+        return True
+
+    try:
+        overall_number = float(overall)
+    except (TypeError, ValueError):
+        return False
+
+    return min(categories) - 0.01 <= overall_number <= max(categories) + 0.01
+
 def is_valid_ipo_snapshot(row):
     """Return True when a snapshot contains enough data to represent an IPO.
 
@@ -179,6 +214,11 @@ def is_valid_ipo_snapshot(row):
 
     has_size = bool(getattr(row, "ipo_size", None))
     has_lot = bool(getattr(row, "lot_size", None))
+
+    # Reject scraper rows where the overall subscription was parsed from
+    # the wrong column and is incompatible with the category values.
+    if not is_subscription_consistent(row):
+        return False
 
     # Reject legacy corrupted snapshots where the scraper accidentally stored
     # the IPO size (for example "₹351.03 Cr") as the company name.
@@ -510,6 +550,7 @@ def ipo_history(company: str):
             }
             for r in rows
             if r.sub_overall is not None
+            and is_subscription_consistent(r)
         ]
 
         # -------------------------------------------------
