@@ -3996,7 +3996,7 @@ function buildAnalysisV2(data, history, mechanical){
     positives.push('No strong positive signal is available in the current data.');
   }
   if(!risks.length){
-    risks.push('Category-wise QIB/NII/Retail subscription data was unavailable, so demand quality cannot be fully verified beyond the overall 10.22× subscription.');
+    risks.push(Number.isFinite(sub) ? `Category-wise QIB/NII/Retail subscription data was unavailable, so demand quality cannot be fully verified beyond the overall ${sub}x subscription.` : 'Category-wise QIB/NII/Retail subscription data was unavailable, so demand quality cannot be fully verified from overall subscription data.');
   }
 
   const breakdown = signals.map(signal => ({
@@ -4533,7 +4533,7 @@ function renderResult(data, history, financials){
     <div class="block verdict">
       <p class="block-title">Backend Verdict</p>
       <p class="verdict-text">${plain(data.verdict)}</p>
-      <div class="confidence">Confidence: ${mechanical.confidence}% · fetched ${formatDate(data.fetched_at)}</div>
+      <div class="confidence">Confidence: ${mechanical.confidence}% · data snapshot ${formatDate(data.fetched_at)}</div>
     </div>
 
   `;
