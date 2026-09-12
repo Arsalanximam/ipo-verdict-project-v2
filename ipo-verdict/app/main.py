@@ -5,7 +5,6 @@ from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 from datetime import datetime, date, timedelta
 from statistics import median
-from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -1048,6 +1047,7 @@ def dashboard():
 # WEEKLY GMP INTELLIGENCE
 # ---------------------------------------------------------
 
+@app.get("/api/gmp-weekly")
 def _weekly_company_key(company):
     """Return a stable company key for weekly historical analytics.
 
@@ -1082,8 +1082,7 @@ def _weekly_company_key(company):
     return text
 
 
-@app.get("/api/gmp-weekly")
-def weekly_gmp_intelligence(company: Optional[str] = None):
+def weekly_gmp_intelligence():
     """Return market-level GMP intelligence for the current Monday-Sunday week.
 
     The dashboard uses the latest valid GMP snapshot for each IPO as the
@@ -1107,16 +1106,6 @@ def weekly_gmp_intelligence(company: Optional[str] = None):
             .order_by(IPOSnapshot.fetched_at.asc())
             .all()
         )
-
-        # Weekly intelligence should describe the IPOs currently tracked by
-        # the dashboard. Keep historical snapshots for those IPOs so movers
-        # still compare the first vs latest GMP during the week.
-        current_rows = latest_valid_rows(db, max_rows=200)
-        current_company_keys = {
-            _weekly_company_key(row.company)
-            for row in current_rows
-            if str(row.company or '').strip()
-        }
 
         weekly_rows = []
         for row in rows:
@@ -1146,9 +1135,6 @@ def weekly_gmp_intelligence(company: Optional[str] = None):
             if not company or not normalized:
                 continue
 
-            if normalized not in current_company_keys:
-                continue
-
             weekly_rows.append((normalized, row, gmp, compare_time))
 
         by_company = {}
@@ -1168,20 +1154,37 @@ def weekly_gmp_intelligence(company: Optional[str] = None):
             if first_gmp != 0:
                 change_pct = round((change / abs(first_gmp)) * 100, 2)
 
-            first_subscription = first_row.sub_overall
-            latest_subscription = latest_row.sub_overall
-            try:
-                first_subscription = float(first_subscription) if first_subscription is not None else None
-            except (TypeError, ValueError):
-                first_subscription = None
-            try:
-                latest_subscription = float(latest_subscription) if latest_subscription is not None else None
-            except (TypeError, ValueError):
-                latest_subscription = None
+            # Subscription data can be missing on the first or latest GMP
+            # snapshot even when usable subscription values exist elsewhere
+            # in the same week's history. Use the first and latest snapshots
+            # that actually contain subscription data.
+            subscription_entries = []
+            for entry_row, entry_gmp, entry_time in entries:
+                value = getattr(entry_row, "sub_overall", None)
+                try:
+                    value = float(value) if value is not None else None
+                except (TypeError, ValueError):
+                    value = None
+                if value is not None:
+                    subscription_entries.append((value, entry_time))
+
+            first_subscription = (
+                subscription_entries[0][0]
+                if subscription_entries
+                else None
+            )
+            latest_subscription = (
+                subscription_entries[-1][0]
+                if subscription_entries
+                else None
+            )
 
             subscription_change = None
-            if first_subscription is not None and latest_subscription is not None:
-                subscription_change = round(latest_subscription - first_subscription, 2)
+            if len(subscription_entries) >= 2:
+                subscription_change = round(
+                    latest_subscription - first_subscription,
+                    2,
+                )
 
             item = {
                 "company": str(latest_row.company or first_row.company or "").strip(),
