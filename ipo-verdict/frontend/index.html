@@ -1868,7 +1868,7 @@ tr:last-child td{
       <div class="subscription-intel-panel"><div class="weekly-panel-head"><div class="weekly-panel-title">🔥 Highest Subscription</div><div class="weekly-panel-tag">Latest</div></div><div class="weekly-list" id="subscriptionLeaders"><div class="weekly-empty">Loading…</div></div></div>
       <div class="subscription-intel-panel"><div class="weekly-panel-head"><div class="weekly-panel-title">📉 Lowest Subscription</div><div class="weekly-panel-tag">Latest</div></div><div class="weekly-list" id="subscriptionLosers"><div class="weekly-empty">Loading…</div></div></div>
       <div class="subscription-intel-panel"><div class="weekly-panel-head"><div class="weekly-panel-title">🚀 Biggest Demand Rise</div><div class="weekly-panel-tag">First → latest</div></div><div class="weekly-list" id="subscriptionRisers"><div class="weekly-empty">Loading…</div></div></div>
-      <div class="subscription-intel-panel"><div class="weekly-panel-head"><div class="weekly-panel-title">⚠️ Biggest Demand Fall</div><div class="weekly-panel-tag">First → latest</div></div><div class="weekly-list" id="subscriptionFalls"><div class="weekly-empty">Loading…</div></div></div>
+      <div class="subscription-intel-panel"><div class="weekly-panel-head"><div class="weekly-panel-title">⚠️ Weakest Demand Movement</div><div class="weekly-panel-tag">Smallest change</div></div><div class="weekly-list" id="subscriptionFalls"><div class="weekly-empty">Loading…</div></div></div>
     </div>
   </div>
 
@@ -2794,7 +2794,7 @@ function renderWeeklySubscriptionList(targetId, items, mode){
   const target = document.getElementById(targetId);
   if(!target) return;
   if(!Array.isArray(items) || !items.length){
-    target.innerHTML = `<div class="subscription-intel-empty">No directional subscription movement recorded this week. The available snapshots do not show a usable first-to-latest change.</div>`;
+    target.innerHTML = `<div class="subscription-intel-empty">No subscription movement was recorded this week.</div>`;
     return;
   }
   target.innerHTML = items.map((item,index) => {
@@ -2883,7 +2883,19 @@ async function loadWeeklyGMP(){
     renderWeeklySubscriptionList("subscriptionLeaders", data.subscription_leaders, "leader");
     renderWeeklySubscriptionList("subscriptionLosers", data.subscription_losers, "loser");
     renderWeeklySubscriptionList("subscriptionRisers", data.subscription_risers, "rise");
-    renderWeeklySubscriptionList("subscriptionFalls", data.subscription_falls, "fall");
+
+    const subscriptionFalls = Array.isArray(data.subscription_falls)
+      ? data.subscription_falls
+      : [];
+    const weakestDemand = subscriptionFalls.length
+      ? subscriptionFalls
+      : (Array.isArray(data.subscription_leaders)
+          ? [...data.subscription_leaders]
+              .filter(item => item && item.subscription_change !== null && item.subscription_change !== undefined)
+              .sort((a, b) => Number(a.subscription_change) - Number(b.subscription_change))
+              .slice(0, 5)
+          : []);
+    renderWeeklySubscriptionList("subscriptionFalls", weakestDemand, subscriptionFalls.length ? "fall" : "rise");
 
   }catch(error){
     console.warn("Weekly GMP intelligence unavailable:", error);
