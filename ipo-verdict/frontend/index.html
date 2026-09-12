@@ -2889,11 +2889,8 @@ async function loadWeeklyGMP(){
       : [];
     const weakestDemand = subscriptionFalls.length
       ? subscriptionFalls
-      : (Array.isArray(data.subscription_leaders)
-          ? [...data.subscription_leaders]
-              .filter(item => item && item.subscription_change !== null && item.subscription_change !== undefined)
-              .sort((a, b) => Number(a.subscription_change) - Number(b.subscription_change))
-              .slice(0, 5)
+      : (Array.isArray(data.subscription_weakest)
+          ? data.subscription_weakest
           : []);
     renderWeeklySubscriptionList("subscriptionFalls", weakestDemand, subscriptionFalls.length ? "fall" : "rise");
 
