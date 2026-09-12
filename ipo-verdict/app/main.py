@@ -152,41 +152,6 @@ def calculate_status(
 
 
 
-
-def is_subscription_consistent(row):
-    """Return True when overall subscription is mathematically compatible
-    with the available category subscription values.
-
-    Overall subscription is a weighted average of the QIB, NII and Retail
-    category subscription levels, so when category values are present, the
-    overall value must fall between the smallest and largest category value.
-    This rejects scraper rows where the overall field was parsed from the
-    wrong table column.
-    """
-    overall = getattr(row, "sub_overall", None)
-    categories = []
-
-    for field in ("sub_qib", "sub_nii", "sub_retail"):
-        value = getattr(row, field, None)
-        if value is None:
-            continue
-        try:
-            number = float(value)
-        except (TypeError, ValueError):
-            continue
-        if number >= 0:
-            categories.append(number)
-
-    if overall is None or len(categories) < 2:
-        return True
-
-    try:
-        overall_number = float(overall)
-    except (TypeError, ValueError):
-        return False
-
-    return min(categories) - 0.01 <= overall_number <= max(categories) + 0.01
-
 def is_valid_ipo_snapshot(row):
     """Return True when a snapshot contains enough data to represent an IPO.
 
@@ -214,11 +179,6 @@ def is_valid_ipo_snapshot(row):
 
     has_size = bool(getattr(row, "ipo_size", None))
     has_lot = bool(getattr(row, "lot_size", None))
-
-    # Reject scraper rows where the overall subscription was parsed from
-    # the wrong column and is incompatible with the category values.
-    if not is_subscription_consistent(row):
-        return False
 
     # Reject legacy corrupted snapshots where the scraper accidentally stored
     # the IPO size (for example "₹351.03 Cr") as the company name.
@@ -524,17 +484,48 @@ def ipo_history(company: str):
         # GMP HISTORY
         # -------------------------------------------------
 
-        gmp_points = [
-            {
-                "value": r.gmp_value,
-                "pct": r.gmp_pct,
-                "fetched_at": r.fetched_at.isoformat(),
-            }
+        # A scraper can return GMP=0 when the live GMP field was not
+        # actually available. If the same IPO has a real non-zero GMP
+        # elsewhere in its history and the zero row has no GMP timestamp,
+        # do not let that incomplete row overwrite the usable GMP history.
+        usable_gmp_rows = [
+            r
             for r in rows
             if r.gmp_value is not None
             and r.price is not None
             and r.price > 0
         ]
+
+        has_non_zero_gmp = False
+        for r in usable_gmp_rows:
+            try:
+                if float(r.gmp_value) != 0:
+                    has_non_zero_gmp = True
+                    break
+            except (TypeError, ValueError):
+                continue
+
+        gmp_points = []
+        for r in usable_gmp_rows:
+            try:
+                gmp_number = float(r.gmp_value)
+            except (TypeError, ValueError):
+                continue
+
+            if (
+                gmp_number == 0
+                and has_non_zero_gmp
+                and not getattr(r, "gmp_as_of", None)
+            ):
+                continue
+
+            gmp_points.append(
+                {
+                    "value": r.gmp_value,
+                    "pct": r.gmp_pct,
+                    "fetched_at": r.fetched_at.isoformat(),
+                }
+            )
 
         # -------------------------------------------------
         # SUBSCRIPTION HISTORY
@@ -550,7 +541,6 @@ def ipo_history(company: str):
             }
             for r in rows
             if r.sub_overall is not None
-            and is_subscription_consistent(r)
         ]
 
         # -------------------------------------------------
