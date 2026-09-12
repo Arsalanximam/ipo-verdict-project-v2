@@ -1252,6 +1252,14 @@ def weekly_gmp_intelligence():
             key=lambda item: item["subscription_change"],
         )[:5]
 
+        # Always provide the five weakest subscription movements.
+        # If there are no negative movements, this returns the smallest
+        # non-negative changes instead of incorrectly using the top demand IPOs.
+        subscription_weakest = sorted(
+            [item for item in subscription_items if item.get("subscription_change") is not None],
+            key=lambda item: item["subscription_change"],
+        )[:5]
+
         subscription_points = [item["subscription"] for item in subscription_items]
         subscription_average = round(sum(subscription_points) / len(subscription_points), 2) if subscription_points else None
         subscription_median = round(median(subscription_points), 2) if subscription_points else None
@@ -1313,6 +1321,7 @@ def weekly_gmp_intelligence():
             "subscription_losers": subscription_losers,
             "subscription_risers": subscription_risers,
             "subscription_falls": subscription_falls,
+            "subscription_weakest": subscription_weakest,
             "subscription_available_count": len(subscription_items),
             "subscription_average": subscription_average,
             "subscription_median": subscription_median,
