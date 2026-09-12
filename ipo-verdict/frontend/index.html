@@ -2056,6 +2056,31 @@ function formatDate(value){
 }
 
 
+function uniqueLatestByCompany(items){
+  const latestByName = new Map();
+
+  (items || []).forEach(item => {
+    const key = cleanIPOCompanyName(item.company).trim().toLowerCase();
+    if(!key) return;
+
+    const existing = latestByName.get(key);
+    if(!existing){
+      latestByName.set(key, item);
+      return;
+    }
+
+    const currentTime = new Date(item.fetched_at || 0).getTime();
+    const existingTime = new Date(existing.fetched_at || 0).getTime();
+
+    if(currentTime >= existingTime){
+      latestByName.set(key, item);
+    }
+  });
+
+  return Array.from(latestByName.values());
+}
+
+
 function renderIPOList(items, container){
 
   if(!items || !items.length){
@@ -3059,7 +3084,7 @@ async function loadDashboard(){
     // ---------------------------------------------------
 
     const leaders =
-      [...gmpItems]
+      uniqueLatestByCompany(gmpItems)
         .sort(
           (a,b) =>
             Number(b.gmp_value) -
@@ -3073,7 +3098,7 @@ async function loadDashboard(){
     // ---------------------------------------------------
 
     const losers =
-      [...gmpItems]
+      uniqueLatestByCompany(gmpItems)
         .sort(
           (a,b) =>
             Number(a.gmp_value) -
