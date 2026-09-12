@@ -1047,7 +1047,6 @@ def dashboard():
 # WEEKLY GMP INTELLIGENCE
 # ---------------------------------------------------------
 
-@app.get("/api/gmp-weekly")
 def _weekly_company_key(company):
     """Return a stable company key for weekly historical analytics.
 
@@ -1082,6 +1081,7 @@ def _weekly_company_key(company):
     return text
 
 
+@app.get("/api/gmp-weekly")
 def weekly_gmp_intelligence():
     """Return market-level GMP intelligence for the current Monday-Sunday week.
 
