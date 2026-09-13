@@ -68,7 +68,8 @@ header{
   display:flex;
   align-items:center;
   gap:12px;
-}
+;
+  cursor:pointer}
 
 .logo{
   width:42px;
@@ -1592,7 +1593,7 @@ tr:last-child td{
 <div class="wrap">
 
 <header>
-  <div class="brand">
+  <div class="brand" id="brandHome" role="button" tabindex="0" aria-label="Go to Dashboard" title="Go to Dashboard">
     <div class="logo">IV</div>
     <div>
       <div class="brand-name">IPO Verdict</div>
@@ -4477,14 +4478,27 @@ function renderResult(data, history, financials){
 
   resultBox.classList.add("show");
 
+  const goToDashboard = () => {
+    resultBox.classList.remove("show");
+    resultBox.innerHTML = "";
+    errorBox.classList.remove("show");
+    input.value = "";
+    window.scrollTo({top:0, behavior:"smooth"});
+  };
+
   const backButton = document.getElementById("backToDashboard");
   if(backButton){
-    backButton.addEventListener("click", () => {
-      resultBox.classList.remove("show");
-      resultBox.innerHTML = "";
-      errorBox.classList.remove("show");
-      input.value = "";
-      window.scrollTo({top:0, behavior:"smooth"});
+    backButton.addEventListener("click", goToDashboard);
+  }
+
+  const brandHome = document.getElementById("brandHome");
+  if(brandHome){
+    brandHome.addEventListener("click", goToDashboard);
+    brandHome.addEventListener("keydown", (event) => {
+      if(event.key === "Enter" || event.key === " "){
+        event.preventDefault();
+        goToDashboard();
+      }
     });
   }
 
