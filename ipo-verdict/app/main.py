@@ -1,4 +1,7 @@
 import logging
+import os
+import hmac
+import threading
 import re
 from html.parser import HTMLParser
 from urllib.request import Request, urlopen
@@ -6,7 +9,7 @@ from urllib.error import URLError, HTTPError
 from datetime import datetime, date, timedelta, timezone
 from statistics import median
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -54,6 +57,61 @@ app.add_middleware(
 @app.on_event("startup")
 def startup_event():
     init_db()
+
+
+# ---------------------------------------------------------
+# FREE EXTERNAL CRON TRIGGER
+# ---------------------------------------------------------
+
+_worker_lock = threading.Lock()
+
+
+def _run_worker_background():
+    """Run the existing one-shot worker outside the API request path."""
+    if not _worker_lock.acquire(blocking=False):
+        logger.info("Worker refresh already running; skipping overlapping run")
+        return
+
+    try:
+        from app.worker import run_once
+        saved, failed = run_once()
+        logger.info(
+            "Background worker refresh complete: %d saved, %d failed",
+            saved,
+            failed,
+        )
+    except Exception:
+        logger.exception("Background worker refresh failed")
+    finally:
+        _worker_lock.release()
+
+
+@app.get("/api/worker")
+def trigger_worker(
+    background_tasks: BackgroundTasks,
+    token: str = "",
+):
+    """Secure trigger for a free external cron service."""
+    configured_token = os.getenv("WORKER_CRON_TOKEN", "").strip()
+
+    if not configured_token:
+        raise HTTPException(503, "Worker trigger is not configured")
+
+    if not token or not hmac.compare_digest(token, configured_token):
+        raise HTTPException(403, "Invalid worker token")
+
+    if _worker_lock.locked():
+        return {
+            "status": "already_running",
+            "message": "Worker refresh is already running",
+        }
+
+    background_tasks.add_task(_run_worker_background)
+
+    return {
+        "status": "started",
+        "message": "Worker refresh started in background",
+    }
 
 
 # ---------------------------------------------------------
