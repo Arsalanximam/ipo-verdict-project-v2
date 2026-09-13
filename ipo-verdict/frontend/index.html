@@ -336,35 +336,35 @@ h1{
 .stats{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:12px;
-  margin-bottom:32px;
+  gap:10px;
+  margin-bottom:18px;
 }
 
 .stat{
   background:linear-gradient(145deg,var(--panel),#0e1217);
   border:1px solid var(--line);
-  border-radius:13px;
-  padding:20px;
+  border-radius:12px;
+  padding:13px 15px;
 }
 
 .stat-label{
   color:var(--muted);
-  font-size:11px;
+  font-size:10px;
   text-transform:uppercase;
   letter-spacing:.07em;
 }
 
 .stat-value{
-  font-size:30px;
+  font-size:24px;
   font-weight:850;
-  margin-top:8px;
+  margin-top:5px;
   letter-spacing:-.03em;
 }
 
 .stat-note{
   color:#626b77;
-  font-size:11px;
-  margin-top:5px;
+  font-size:10px;
+  margin-top:3px;
 }
 
 
@@ -741,13 +741,80 @@ h1{
 
 .table-wrap{
   overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
 }
 
 table{
   width:100%;
   border-collapse:collapse;
-  min-width:650px;
+  min-width:1280px;
 }
+
+.current-gmp-table th{white-space:nowrap;padding:13px 12px;}
+.current-gmp-table td{white-space:nowrap;padding:14px 12px;vertical-align:middle;}
+.current-gmp-table .name-col{min-width:240px;width:240px;max-width:240px;vertical-align:top;}
+.current-gmp-market-label{display:inline-block;margin-top:4px;padding:2px 7px;border:1px solid rgba(242,182,50,.24);border-radius:999px;color:var(--muted);font-size:8px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;line-height:1.2;}
+.current-gmp-card-market-label{display:block;width:max-content;margin-top:5px;padding:2px 7px;border:1px solid rgba(242,182,50,.24);border-radius:999px;color:var(--muted);font-size:8px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;line-height:1.2;}
+
+.current-gmp-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;align-items:center;}
+.current-gmp-badge{display:inline-flex;align-items:center;width:max-content;padding:3px 7px;border-radius:6px;font-size:8px;font-weight:850;letter-spacing:.06em;text-transform:uppercase;line-height:1.15;border:1px solid transparent;}
+.current-gmp-badge.market-mainboard{background:rgba(72,129,255,.13);border-color:rgba(72,129,255,.28);color:#9dbdff;}
+.current-gmp-badge.market-sme{background:rgba(168,92,255,.13);border-color:rgba(168,92,255,.28);color:#d0a9ff;}
+.current-gmp-badge.status-open{background:rgba(34,197,94,.13);border-color:rgba(34,197,94,.28);color:#7ee7a0;}
+.current-gmp-badge.status-upcoming{background:rgba(242,182,50,.13);border-color:rgba(242,182,50,.28);color:#f5c85c;}
+.current-gmp-badge.status-closing-soon{background:rgba(255,143,51,.14);border-color:rgba(255,143,51,.30);color:#ffb36d;}
+.current-gmp-badge.status-closed{background:rgba(130,139,151,.14);border-color:rgba(130,139,151,.28);color:#aeb6c0;}
+.current-gmp-business{display:block;margin-top:7px;color:#858f9c;font-size:10px;line-height:1.35;max-width:34ch;white-space:normal;}
+.current-gmp-card-name{min-height:72px;max-height:2.5in;overflow:hidden;}
+.current-gmp-card-business{display:block;margin-top:7px;color:#858f9c;font-size:10px;line-height:1.35;white-space:normal;}
+.current-gmp-card-head{min-height:96px;}
+@media(max-width:650px){.current-gmp-card-head{min-height:96px;}.current-gmp-card-name{max-height:2.5in;}}
+
+.current-gmp-table .num-col{text-align:center;}
+.current-gmp-table .gmp-cell{font-weight:800;}
+.current-gmp-table .gmp-pct{color:var(--muted);font-size:10px;margin-left:3px;}
+.current-gmp-table .date-cell{color:var(--muted);font-size:11px;}
+.current-gmp-table .anchor-yes{font-size:16px;}
+.current-gmp-head{gap:18px;}
+.current-gmp-toolbar{display:flex;justify-content:flex-end;align-items:center;margin-left:auto;}
+.view-toggle{display:inline-flex;align-items:center;padding:3px;border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.025);gap:2px;}
+.view-toggle button{border:0;background:transparent;color:var(--muted);padding:7px 14px;border-radius:18px;font-size:10px;font-weight:800;letter-spacing:.05em;cursor:pointer;}
+.view-toggle button.active{background:var(--gold);color:#171006;}
+
+@media(max-width:700px){
+  .current-gmp-head{align-items:flex-start;}
+  .current-gmp-toolbar{flex-shrink:0;}
+}
+.current-gmp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;}
+.current-gmp-card{background:rgba(255,255,255,.018);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0;transition:transform .18s ease,border-color .18s ease,background .18s ease;}
+.current-gmp-card:hover{transform:translateY(-2px);border-color:rgba(242,182,50,.28);background:rgba(255,255,255,.028);}
+.current-gmp-card-head{display:block;padding-bottom:13px;border-bottom:1px solid var(--line);}
+.current-gmp-card-name{font-weight:800;font-size:14px;line-height:1.35;min-width:0;min-height:72px;max-height:2.5in;overflow:hidden;}
+.current-gmp-card-name button{border:0;background:none;padding:0;color:#f4f6f8;font:inherit;text-align:left;cursor:pointer;}
+.current-gmp-card-name button:hover{color:var(--gold);}
+.current-gmp-card-status{display:none;}
+.current-gmp-main{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:13px;}
+.current-gmp-metric{padding:10px 11px;min-width:0;border:1px solid rgba(255,255,255,.065);border-radius:9px;background:rgba(255,255,255,.012);}
+.current-gmp-label{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.current-gmp-value{font-size:12px;font-weight:750;line-height:1.35;overflow-wrap:anywhere;}
+.current-gmp-value.gmp-positive{color:var(--green);}.current-gmp-value.gmp-negative{color:var(--red);}
+.current-gmp-subtle{color:var(--muted);font-size:10px;font-weight:500;}
+.current-gmp-card-footer{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;padding-top:8px;border-top:0;color:var(--muted);font-size:9px;}
+.current-gmp-card-footer span{padding:9px 10px;border:1px solid rgba(255,255,255,.065);border-radius:9px;}
+.current-gmp-card-footer strong{color:#d9dde2;font-weight:700;}
+.current-gmp-view[hidden]{display:none!important;}
+@media(max-width:1050px){.current-gmp-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:650px){
+  .current-gmp-grid{grid-template-columns:1fr;gap:12px;}
+  .current-gmp-card{padding:13px;}
+  .current-gmp-card-name{min-height:72px;max-height:2.5in;}
+  .current-gmp-main{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+  .current-gmp-metric{padding:9px 10px;}
+  .current-gmp-toolbar{justify-content:stretch}
+  .view-toggle{width:100%}
+  .view-toggle button{flex:1}
+}
+
 
 th{
   text-align:left;
@@ -888,21 +955,7 @@ tr:last-child td{
   border-right:1px solid var(--line);
 }
 
-.ipo-info-number{
-  position:absolute;
-  top:6px;
-  left:8px;
-  width:17px;
-  height:17px;
-  display:grid;
-  place-items:center;
-  border:1px solid rgba(242,182,50,.35);
-  border-radius:50%;
-  color:var(--gold);
-  font-size:9px;
-  font-weight:850;
-  line-height:1;
-}
+
 
 .ipo-info-item .ipo-info-label{
   padding-left:10px;
@@ -1611,6 +1664,189 @@ tr:last-child td{
   font-weight:750;
 }
 
+
+/* Mobile Current IPO GMP: keep the reference-style first information columns visible. */
+@media(max-width:650px){
+  .current-gmp-table{min-width:0;width:100%;table-layout:fixed;}
+  .current-gmp-table th,.current-gmp-table td{padding:10px 8px;}
+  .current-gmp-table th:nth-child(1),.current-gmp-table td:nth-child(1){width:44%;}
+  .current-gmp-table th:nth-child(2),.current-gmp-table td:nth-child(2){width:18%;}
+  .current-gmp-table th:nth-child(3),.current-gmp-table td:nth-child(3){width:16%;}
+  .current-gmp-table th:nth-child(5),.current-gmp-table td:nth-child(5){width:22%;}
+  .current-gmp-table th:nth-child(4),.current-gmp-table td:nth-child(4),
+  .current-gmp-table th:nth-child(6),.current-gmp-table td:nth-child(6),
+  .current-gmp-table th:nth-child(7),.current-gmp-table td:nth-child(7),
+  .current-gmp-table th:nth-child(8),.current-gmp-table td:nth-child(8),
+  .current-gmp-table th:nth-child(9),.current-gmp-table td:nth-child(9),
+  .current-gmp-table th:nth-child(10),.current-gmp-table td:nth-child(10),
+  .current-gmp-table th:nth-child(11),.current-gmp-table td:nth-child(11),
+  .current-gmp-table th:nth-child(12),.current-gmp-table td:nth-child(12){display:none;}
+  .current-gmp-table .name-col{min-width:0;width:44%;max-width:none;white-space:normal;}
+  .current-gmp-business{max-width:none;}
+}
+
+/* Current IPO GMP only: compact separated information boxes */
+.current-gmp-table-wrap{
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow:auto;
+}
+.current-gmp-table{
+  border-collapse:separate;
+  border-spacing:0;
+}
+.current-gmp-table th,
+.current-gmp-table td{
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.current-gmp-table th:last-child,
+.current-gmp-table td:last-child{
+  border-right:0;
+}
+.current-gmp-table tbody tr:last-child td{
+  border-bottom:0;
+}
+.current-gmp-table tbody td{
+  padding-top:10px;
+  padding-bottom:10px;
+  vertical-align:middle;
+}
+.current-gmp-table .name-col{
+  width:2.5in;
+  min-width:2.5in;
+  max-width:2.5in;
+  vertical-align:top;
+  padding-top:12px;
+  padding-bottom:12px;
+}
+.current-gmp-table .name-col .company-name{
+  min-height:2.5in;
+  max-height:2.5in;
+  display:block;
+  overflow:hidden;
+}
+.current-gmp-table tbody tr{
+  height:auto;
+}
+.current-gmp-table tbody tr:hover td{
+  background:rgba(255,255,255,.018);
+}
+
+/* GRID cards: tighter gaps, but each metric remains a separate box */
+.current-gmp-grid{
+  gap:10px;
+}
+.current-gmp-card{
+  padding:13px;
+}
+.current-gmp-main{
+  gap:6px;
+  margin-top:10px;
+}
+.current-gmp-metric{
+  padding:8px 9px;
+}
+.current-gmp-card-footer{
+  gap:6px;
+  margin-top:6px;
+}
+.current-gmp-card-footer span{
+  padding:8px 9px;
+}
+
+/* Keep the same compact boxed structure on phones */
+@media(max-width:650px){
+  .current-gmp-grid{gap:9px;}
+  .current-gmp-card{padding:11px;}
+  .current-gmp-main{gap:6px;}
+  .current-gmp-metric{padding:8px;}
+  .current-gmp-table .name-col{
+    width:2.5in;
+    min-width:2.5in;
+    max-width:2.5in;
+  }
+  .current-gmp-table .name-col .company-name{
+    min-height:2.5in;
+    max-height:2.5in;
+  }
+}
+
+/* Current IPO GMP only: keep GMP value + percentage inside the mobile cell */
+.current-gmp-table .gmp-cell{
+  white-space:normal;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+.current-gmp-table .gmp-pct{
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+@media(max-width:650px){
+  .current-gmp-table th:nth-child(1),.current-gmp-table td:nth-child(1){width:40%;}
+  .current-gmp-table th:nth-child(2),.current-gmp-table td:nth-child(2){width:24%;}
+  .current-gmp-table th:nth-child(3),.current-gmp-table td:nth-child(3){width:16%;}
+  .current-gmp-table th:nth-child(5),.current-gmp-table td:nth-child(5){width:20%;}
+  .current-gmp-table .gmp-cell{
+    white-space:normal;
+    padding-left:7px;
+    padding-right:7px;
+    font-size:12px;
+    line-height:1.25;
+  }
+  .current-gmp-table .gmp-pct{
+    display:block;
+    margin-left:0;
+    margin-top:3px;
+    font-size:9px;
+    line-height:1.2;
+  }
+  .current-gmp-table .name-col{
+    width:40%;
+    min-width:0;
+    max-width:none;
+  }
+}
+
+/* Current IPO GMP only: keep Rating stars inside the mobile cell */
+.current-gmp-table .rating-cell{
+  white-space:normal;
+  overflow:hidden;
+  overflow-wrap:anywhere;
+}
+.current-gmp-table .rating-stars{
+  display:inline-flex;
+  flex-wrap:wrap;
+  max-width:100%;
+  gap:1px;
+  line-height:1.15;
+}
+@media(max-width:650px){
+  .current-gmp-table th:nth-child(3),
+  .current-gmp-table td:nth-child(3){
+    width:18%;
+  }
+  .current-gmp-table .rating-cell{
+    width:18%;
+    max-width:18%;
+    padding-left:5px;
+    padding-right:5px;
+    white-space:normal;
+    overflow:hidden;
+    text-align:center;
+  }
+  .current-gmp-table .rating-stars{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+    max-width:100%;
+    font-size:12px;
+    letter-spacing:0;
+    line-height:1.1;
+    overflow:hidden;
+  }
+}
 </style>
 </head>
 
@@ -1694,19 +1930,13 @@ tr:last-child td{
     <div>
       <h2 class="section-title">IPO Market Overview</h2>
       <div class="section-subtitle">
-        Based on IPOs currently tracked by your backend
+        Based on IPOs currently Available
       </div>
     </div>
   </div>
 
 
   <div class="stats">
-
-    <div class="stat">
-      <div class="stat-label">Tracked IPOs</div>
-      <div class="stat-value" id="trackedCount">—</div>
-      <div class="stat-note">Latest snapshots</div>
-    </div>
 
     <div class="stat">
       <div class="stat-label">Open IPOs</div>
@@ -1723,31 +1953,13 @@ tr:last-child td{
     <div class="stat">
       <div class="stat-label">Closing Soon</div>
       <div class="stat-value" id="closingCount">—</div>
-      <div class="stat-note">Closing soon</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-label">Allotted</div>
-      <div class="stat-value" id="AllottedCount">—</div>
-      <div class="stat-note">Already Allotted</div>
+      <div class="stat-note">Today or tomorrow</div>
     </div>
 
     <div class="stat">
       <div class="stat-label">Closed</div>
       <div class="stat-value" id="closedCount">—</div>
-      <div class="stat-note">Closed IPOs</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-label">GMP Available</div>
-      <div class="stat-value" id="gmpCount">—</div>
-      <div class="stat-note">With usable GMP</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-label">Average GMP</div>
-      <div class="stat-value" id="averageGmp">—</div>
-      <div class="stat-note">Tracked IPOs</div>
+      <div class="stat-note">Subscription closed</div>
     </div>
 
   </div>
@@ -1756,27 +1968,42 @@ tr:last-child td{
 
   <div class="card">
 
-    <div class="card-head">
+    <div class="card-head current-gmp-head">
       <div>
         <div class="card-title">Current IPO GMP</div>
         <div class="section-subtitle">
           Latest tracked snapshots
         </div>
       </div>
+
+      <div class="current-gmp-toolbar">
+        <div class="view-toggle" role="group" aria-label="Current IPO GMP view">
+          <button type="button" id="tableViewBtn" class="active">TABLE</button>
+          <button type="button" id="gridViewBtn">GRID</button>
+        </div>
+      </div>
     </div>
 
-    <div class="table-wrap">
+    <div id="currentGmpGrid" class="current-gmp-grid current-gmp-view" hidden></div>
 
-      <table>
+    <div id="currentGmpTableView" class="table-wrap current-gmp-view">
+
+      <table class="current-gmp-table">
 
         <thead>
           <tr>
-            <th>IPO</th>
-            <th>Status</th>
+            <th>NAME</th>
             <th>GMP</th>
-            <th>Subscription</th>
-            <th>Rating</th>
-            <th>Updated</th>
+            <th>RATING</th>
+            <th>SUB</th>
+            <th>PRICE (₹)</th>
+            <th>IPO SIZE</th>
+            <th>LOT</th>
+            <th>OPEN → CLOSE</th>
+            <th>BOA DT</th>
+            <th>LISTING</th>
+            <th>UPDATED-ON</th>
+            <th>ANCHOR</th>
           </tr>
         </thead>
 
@@ -1985,7 +2212,7 @@ tr:last-child td{
 </section>
 
 
-<div class="developed-by"><span>Developed by</span><span class="developer-name">Add your name here</span></div>
+<div class="developed-by"><span>Developed by</span><span class="developer-name">Arsalan Imam</span></div>
 
 <p class="disclaimer">
   GMP is an unofficial grey-market indicator and is not regulated by SEBI.
@@ -2022,6 +2249,10 @@ const averageGmp = document.getElementById("averageGmp");
 const leadersBox = document.getElementById("leadersBox");
 const losersBox = document.getElementById("losersBox");
 const recentTable = document.getElementById("recentTable");
+const currentGmpGrid = document.getElementById("currentGmpGrid");
+const currentGmpTableView = document.getElementById("currentGmpTableView");
+const gridViewBtn = document.getElementById("gridViewBtn");
+const tableViewBtn = document.getElementById("tableViewBtn");
 
 
 function escapeHTML(value){
@@ -2218,156 +2449,251 @@ function renderIPOList(items, container){
 }
 
 
-function renderRecent(items){
+function formatCurrentGMPDate(value){
+  const date = parseIPODate(value, false);
+  if(!date) return value ? escapeHTML(String(value)) : "—";
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${String(date.getDate()).padStart(2,"0")}-${months[date.getMonth()]}`;
+}
 
-  // Only show complete IPO records in Recent Activity.
-  // This prevents incomplete/placeholder database rows from leaking into the UI.
-  const validItems = (items || []).filter(item => {
+function formatCurrentGMPUpdated(value){
+  if(!value) return "—";
+  const date = new Date(value);
+  if(Number.isNaN(date.getTime())) return formatDate(value);
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${String(date.getDate()).padStart(2,"0")}-${months[date.getMonth()]} ${String(date.getHours()).padStart(2,"0")}:${String(date.getMinutes()).padStart(2,"0")}`;
+}
+
+function currentGmpDisplayName(value){
+  return String(value || '—')
+    .replace(/\s+(?:BSE|NSE)\s+(?:SMEC|SMEO|SME)\s*$/i,'')
+    .replace(/\s+IPOC\s*$/i,'')
+    .replace(/\s+IPO\s*$/i,'')
+    .trim();
+}
+
+function currentGmpCompanyKey(value){
+  return currentGmpDisplayName(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,' ')
+    .trim();
+}
+
+function currentGmpBusiness(item){
+  const direct = [item?.industry, item?.sector, item?.business, item?.business_activity, item?.business_description, item?.description]
+    .map(v => String(v || '').trim())
+    .find(v => v);
+  if(direct) return direct;
+
+  const key = currentGmpCompanyKey(item?.company);
+  const known = {
+    'a one steels': 'Iron & Steel Products',
+    'sonaselection india': 'Other Textile Products',
+    'nse': 'Exchange and Data Platform',
+    'ss retail': 'Retail / Consumer Products',
+    'hero motors': 'Automotive Components & Mobility',
+    'veegaland developers': 'Real Estate & Property Development',
+    'maharaja speedex india': 'Industrial & Engineering Products',
+    'panchathy bharat': 'Industrial / Manufacturing Products',
+    'om galaxy': 'Manufacturing & Consumer Products',
+    'raksan transformers': 'Electrical Transformers & Equipment',
+    'manika plastech': 'Plastic Packaging & Products',
+    'century business media': 'Business Media & Events',
+    'injecto polymers': 'Polymer & Plastic Products',
+    'vama wovenfab': 'Textile & Woven Fabric Products',
+    'shakti polytarp': 'Tarpaulin & Woven Fabric Products',
+    'quanto agroworld': 'Agricultural Products & Solutions',
+    'jindal supreme': 'Steel & Metal Products',
+    'apana logistics': 'Logistics & Supply Chain Services',
+    'pranav constructions': 'Construction & Real Estate',
+    'prasol chemicals': 'Specialty Chemicals',
+    'glass wall systems': 'Glass & Building Solutions',
+    'kanohar electricals': 'Electrical Equipment & Components',
+    'asset reconstruction': 'Asset Reconstruction & Financial Services',
+    'vinod texworld': 'Textile & Fabric Products'
+  };
+  return known[key] || 'Business information';
+}
+
+function currentGmpStatusClass(status){
+  return `status-${String(status || 'unknown').replace(/_/g,'-').toLowerCase()}`;
+}
+
+function currentGmpCategory(item){
+  const explicit = [item?.category, item?.category_type, item?.market_segment, item?.segment]
+    .map(v => String(v || '').trim().toLowerCase())
+    .find(v => v);
+  if(explicit) return explicit.includes('sme') ? 'SME' : 'MAINBOARD';
+
+  const raw = String(item?.company || '');
+  if(/\b(?:BSE|NSE)\s+(?:SMEC|SMEO|SME)\b/i.test(raw)) return 'SME';
+  return 'MAINBOARD';
+}
+
+function currentGmpMerge(a,b){
+  const merged = {...a};
+  Object.keys(b || {}).forEach(key => {
+    const value = b[key];
+    const hasValue = value !== null && value !== undefined && String(value).trim() !== '';
+    const oldValue = merged[key];
+    const hasOld = oldValue !== null && oldValue !== undefined && String(oldValue).trim() !== '';
+    if(hasValue && !hasOld) merged[key] = value;
+  });
+  const aTime = Date.parse(a?.fetched_at || '') || 0;
+  const bTime = Date.parse(b?.fetched_at || '') || 0;
+  if(bTime > aTime) merged.fetched_at = b.fetched_at;
+  return merged;
+}
+
+function dedupeCurrentGmpItems(items){
+  const map = new Map();
+  (items || []).forEach(item => {
+    const key = currentGmpCompanyKey(item?.company);
+    if(!key) return;
+    map.set(key, map.has(key) ? currentGmpMerge(map.get(key), item) : item);
+  });
+  return [...map.values()];
+}
+
+function renderRecent(items){
+  const validItems = dedupeCurrentGmpItems(items).filter(item => {
+    // Once the IPO is listed, it belongs in the analysis/history sections
+    // below and should automatically disappear from Current IPO GMP.
+    if(getCurrentIPOStatus(item) === "listed") return false;
     const price = Number(item.price);
-    const hasDate = [
-      item.open_date,
-      item.close_date,
-      item.allotment_date,
-      item.listing_date
-    ].some(value => String(value || '').trim());
+    const hasPrice = Number.isFinite(price) && price > 0;
+    const hasDate = [item.open_date,item.close_date,item.allotment_date,item.listing_date]
+      .some(value => String(value || '').trim());
     const hasSize = Boolean(String(item.ipo_size || '').trim());
     const hasLot = Boolean(String(item.lot_size || '').trim());
-
-    return Number.isFinite(price) && price > 0 && hasDate && (hasSize || hasLot);
+    // Include announced/upcoming IPOs even when the price is still TBD.
+    return Boolean(String(item.company || '').trim()) && hasDate && (hasSize || hasLot || hasPrice);
   });
 
-  // Show IPOs in calendar order instead of database/scraper order.
-  // Currently open IPOs come first, ordered by their opening date;
-  // upcoming IPOs follow in opening-date order; other statuses come last.
-  const statusPriority = {
-    open: 0,
-    upcoming: 1,
-    closing_soon: 2,
-    allotted: 3,
-    closed: 4
-  };
-
-  validItems.sort((a, b) => {
-    const aStatus = getCurrentIPOStatus(a);
-    const bStatus = getCurrentIPOStatus(b);
-    const aPriority = statusPriority[aStatus] ?? 5;
-    const bPriority = statusPriority[bStatus] ?? 5;
-
-    if(aPriority !== bPriority){
-      return aPriority - bPriority;
+  // Current IPO GMP is ordered by latest IPO opening date first.
+  // Newer announced/opening issues appear at the top.
+  validItems.sort((a,b) => {
+    const ao=parseIPODate(a.open_date,false), bo=parseIPODate(b.open_date,false);
+    if(ao&&bo){
+      const diff = bo.getTime()-ao.getTime();
+      if(diff) return diff;
     }
+    if(ao) return -1;
+    if(bo) return 1;
 
-    const aDate = parseIPODate(a.open_date, false);
-    const bDate = parseIPODate(b.open_date, false);
-
-    if(aDate && bDate){
-      return aDate.getTime() - bDate.getTime();
+    const ac=parseIPODate(a.close_date,false), bc=parseIPODate(b.close_date,false);
+    if(ac&&bc){
+      const diff = ac.getTime()-bc.getTime();
+      if(diff) return diff;
     }
-    if(aDate) return -1;
-    if(bDate) return 1;
+    if(ac) return -1;
+    if(bc) return 1;
 
-    return String(a.company || '').localeCompare(String(b.company || ''));
+    return String(a.company||'').localeCompare(String(b.company||''));
   });
 
   if(!validItems.length){
-
-    recentTable.innerHTML = `
-      <tr>
-        <td colspan="6" class="empty">
-          No recent IPO data available.
-        </td>
-      </tr>
-    `;
-
+    recentTable.innerHTML='<tr><td colspan="12" class="empty">No current IPO data available.</td></tr>';
+    currentGmpGrid.innerHTML='<div class="empty">No current IPO data available.</div>';
     return;
   }
 
-
-  recentTable.innerHTML = validItems.map(item => {
-
-    const currentStatus = getCurrentIPOStatus(item);
-
-    const gmp =
-      item.gmp_value === null ||
-      item.gmp_value === undefined
-        ? "—"
-        : `₹${item.gmp_value}`;
-
-
-    return `
-
-      <tr>
-
-        <td>
-          <button
-            type="button"
-            class="company-cell company-link"
-            data-company="${escapeHTML(item.company)}"
-            title="Open full IPO analysis"
-          >
-            ${escapeHTML(item.company)}
-          </button>
-        </td>
-
-        <td>
-          <span class="badge">
-            ${formatIPOStatus(currentStatus)}
-          </span>
-        </td>
-
-        <td class="${
-          item.gmp_value >= 0
-            ? "gmp-positive"
-            : "gmp-negative"
-        }">
-
-          ${gmp}
-
-          ${
-            item.gmp_pct !== null &&
-            item.gmp_pct !== undefined
-              ? `<small style="color:var(--muted)">
-                   (${item.gmp_pct}%)
-                 </small>`
-              : ""
-          }
-
-        </td>
-
-        <td>
-          ${
-            item.sub_overall !== null &&
-            item.sub_overall !== undefined
-              ? item.sub_overall + "x"
-              : "—"
-          }
-        </td>
-
-        <td class="rating">
-          ${
-            item.star_rating
-              ? item.star_rating + " ★"
-              : "—"
-          }
-        </td>
-
-        <td style="color:var(--muted)">
-          ${formatDate(item.fetched_at)}
-        </td>
-
-      </tr>
-
-    `;
-
-  }).join("");
-
-  recentTable.querySelectorAll(".company-link").forEach(button => {
-    button.addEventListener("click", () => {
-      openCompanyAnalysis(button.dataset.company || "");
-    });
+  const rowData = validItems.map(item => {
+    const gmpValue=Number(item.gmp_value);
+    const hasGmp=Number.isFinite(gmpValue);
+    const gmpClass=hasGmp&&gmpValue<0?'gmp-negative':'gmp-positive';
+    const flames=Number(item.gmp_rating_flames);
+    const rating=Number.isFinite(flames)&&flames>0
+      ? '🔥'.repeat(Math.min(flames,5))
+      : item.star_rating ? `${item.star_rating} ★` : '—';
+    const price=Number(item.price);
+    const priceText=Number.isFinite(price)
+      ? new Intl.NumberFormat('en-IN',{maximumFractionDigits:2}).format(price) : 'TBD';
+    const subscription=item.sub_overall!==null&&item.sub_overall!==undefined&&String(item.sub_overall).trim()!==''
+      ? `${item.sub_overall}x` : '—';
+    const company=escapeHTML(currentGmpDisplayName(item.company||'—'));
+    const categoryLabel=currentGmpCategory(item);
+    const businessLabel=currentGmpBusiness(item);
+    const marketClass=categoryLabel === 'SME' ? 'market-sme' : 'market-mainboard';
+    const statusClass=currentGmpStatusClass(getCurrentIPOStatus(item));
+    const gmpText=hasGmp ? `₹${gmpValue}` : '₹--';
+    const pctText=item.gmp_pct!==null&&item.gmp_pct!==undefined&&String(item.gmp_pct).trim()!=='' ? `(${item.gmp_pct}%)` : '';
+    const openText=formatCurrentGMPDate(item.open_date);
+    const closeText=formatCurrentGMPDate(item.close_date);
+    const period=`${openText} <span class="date-arrow">→</span> ${closeText}`;
+    const boa=formatCurrentGMPDate(item.allotment_date);
+    const listing=formatCurrentGMPDate(item.listing_date);
+    const updated=formatCurrentGMPUpdated(item.fetched_at);
+    const anchor=item.anchor===true ? '<span class="anchor-yes" title="Anchor participation">✓</span>' : '—';
+    const statusLabel=String(getCurrentIPOStatus(item)||'').replaceAll('_',' ');
+    return {item,gmpValue,hasGmp,gmpClass,rating,priceText,subscription,company,categoryLabel,businessLabel,marketClass,statusClass,gmpText,pctText,openText,closeText,period,boa,listing,updated,anchor,statusLabel};
   });
 
+  recentTable.innerHTML = rowData.map(d => `
+      <tr>
+        <td class="name-col">
+          <button type="button" class="company-cell company-link" data-company="${escapeHTML(d.item.company||'')}" title="Open full IPO analysis">${d.company}</button>
+          <div class="current-gmp-badges">
+            <span class="current-gmp-badge ${d.marketClass}">${d.categoryLabel}</span>
+            <span class="current-gmp-badge ${d.statusClass}">${escapeHTML(d.statusLabel || 'Unknown')}</span>
+          </div>
+          <span class="current-gmp-business">${escapeHTML(d.businessLabel)}</span>
+        </td>
+        <td class="gmp-cell ${d.gmpClass}">${d.gmpText} ${d.pctText ? `<span class="gmp-pct">${d.pctText}</span>` : ''}</td>
+        <td class="rating">${d.rating}</td>
+        <td class="num-col">${d.subscription}</td>
+        <td class="num-col">${d.priceText}</td>
+        <td>${plain(d.item.ipo_size||'—')}</td>
+        <td class="num-col">${plain(d.item.lot_size||'—')}</td>
+        <td class="date-cell">${d.period}</td>
+        <td class="date-cell">${d.boa}</td>
+        <td class="date-cell">${d.listing}</td>
+        <td class="date-cell">${d.updated}</td>
+        <td class="num-col">${d.anchor}</td>
+      </tr>`).join('');
+
+  currentGmpGrid.innerHTML = rowData.map(d => `
+    <article class="current-gmp-card">
+      <div class="current-gmp-card-head">
+        <div class="current-gmp-card-name">
+          <button type="button" class="company-link" data-company="${escapeHTML(d.item.company||'')}" title="Open full IPO analysis">${d.company} ↗</button>
+          <div class="current-gmp-badges">
+            <span class="current-gmp-badge ${d.marketClass}">${d.categoryLabel}</span>
+            <span class="current-gmp-badge ${d.statusClass}">${escapeHTML(d.statusLabel || 'Unknown')}</span>
+          </div>
+          <span class="current-gmp-card-business">${escapeHTML(d.businessLabel)}</span>
+        </div>
+      </div>
+      <div class="current-gmp-main">
+        <div class="current-gmp-metric"><span class="current-gmp-label">GMP</span><div class="current-gmp-value ${d.gmpClass}">${d.gmpText} ${d.pctText ? `<span class="current-gmp-subtle">${d.pctText}</span>` : ''}</div></div>
+        <div class="current-gmp-metric"><span class="current-gmp-label">Rating</span><div class="current-gmp-value">${d.rating}</div></div>
+        <div class="current-gmp-metric"><span class="current-gmp-label">Subscription</span><div class="current-gmp-value">${d.subscription}</div></div>
+        <div class="current-gmp-metric"><span class="current-gmp-label">Price (₹)</span><div class="current-gmp-value">${d.priceText}</div></div>
+        <div class="current-gmp-metric"><span class="current-gmp-label">IPO Size</span><div class="current-gmp-value">${plain(d.item.ipo_size||'—')}</div></div>
+        <div class="current-gmp-metric"><span class="current-gmp-label">Lot</span><div class="current-gmp-value">${plain(d.item.lot_size||'—')}</div></div>
+        <div class="current-gmp-metric"><span class="current-gmp-label">Open → Close</span><div class="current-gmp-value">${d.period}</div></div>
+        <div class="current-gmp-metric"><span class="current-gmp-label">BoA</span><div class="current-gmp-value">${d.boa}</div></div>
+        <div class="current-gmp-metric"><span class="current-gmp-label">Listing</span><div class="current-gmp-value">${d.listing}</div></div>
+      </div>
+      <div class="current-gmp-card-footer"><span>Updated <strong>${d.updated}</strong></span><span>Anchor <strong>${d.anchor}</strong></span></div>
+    </article>`).join('');
+
+  document.querySelectorAll('.company-link').forEach(button => {
+    button.addEventListener('click', () => openCompanyAnalysis(button.dataset.company || ''));
+  });
 }
+
+function setCurrentGmpView(view){
+  const showGrid=view==='grid';
+  currentGmpGrid.hidden=!showGrid;
+  currentGmpTableView.hidden=showGrid;
+  gridViewBtn.classList.toggle('active',showGrid);
+  tableViewBtn.classList.toggle('active',!showGrid);
+}
+
+gridViewBtn.addEventListener('click',()=>setCurrentGmpView('grid'));
+tableViewBtn.addEventListener('click',()=>setCurrentGmpView('table'));
+setCurrentGmpView('table');
 
 
 function parseIPODate(value, endOfDay = false){
@@ -3081,24 +3407,14 @@ async function loadDashboard(){
     // TOP STATISTICS
     // ---------------------------------------------------
 
-    trackedCount.textContent =
-      data.count ?? items.length;
-
+    // Keep this overview focused only on the four useful market states.
+    // Closing Soon is a subset of currently open IPOs, so it is counted
+    // separately for visibility while Open IPOs remain the broader count.
     openCount.textContent =
       statusCounts.open;
 
     upcomingCount.textContent =
       statusCounts.upcoming;
-
-
-    // ---------------------------------------------------
-    // CLOSING SOON
-    //
-    // Authoritative frontend rule:
-    // currently open + closing today or tomorrow.
-    // Backend counts are intentionally ignored here so an old
-    // snapshot cannot disagree with the current calendar.
-    // ---------------------------------------------------
 
     const closingSoonItems = items.filter(item =>
       isClosingSoonStatus(getCurrentIPOStatus(item))
@@ -3107,31 +3423,8 @@ async function loadDashboard(){
     closingCount.textContent =
       closingSoonItems.length;
 
-
-    // ---------------------------------------------------
-    // ALLOTTED
-    // ---------------------------------------------------
-
-    allottedCount.textContent =
-      statusCounts.allotted;
-
     closedCount.textContent =
       statusCounts.closed;
-
-    gmpCount.textContent =
-      gmpItems.length;
-
-    averageGmp.textContent =
-      avgGmp !== null
-        ? "₹" +
-          Number(avgGmp)
-            .toLocaleString(
-              "en-IN",
-              {
-                maximumFractionDigits: 2
-              }
-            )
-        : "—";
 
 
     // ---------------------------------------------------
@@ -3177,8 +3470,17 @@ async function loadDashboard(){
     // RECENT ACTIVITY
     // ---------------------------------------------------
 
+    // Current IPO GMP should show all currently announced/upcoming/open IPOs,
+    // while automatically removing IPOs once their listing date has arrived.
+    // The IPO endpoint can contain newly announced issues that are not yet
+    // present in the dashboard snapshot, so merge both sources here.
+    const currentGmpSource = [
+      ...items,
+      ...searchIPOs
+    ];
+
     renderRecent(
-      items.slice(0,10)
+      currentGmpSource
     );
 
     // Load market-level GMP intelligence independently so a weekly
@@ -4468,47 +4770,38 @@ function renderResult(data, history, financials){
 
     <div class="ipo-info-strip" aria-label="IPO key details">
       <div class="ipo-info-item">
-        <span class="ipo-info-number">1</span>
         <div class="ipo-info-label">GMP</div>
         <div class="ipo-info-value ${gmp !== null && gmp !== undefined && Number(gmp) < 0 ? "gmp-negative" : "gmp-positive"}">${gmp !== null && gmp !== undefined ? `${Number(gmp) >= 0 ? "+" : ""}₹${gmp}` : "—"}</div>
       </div>
       <div class="ipo-info-item">
-        <span class="ipo-info-number">2</span>
         <div class="ipo-info-label">Rating</div>
         <div class="ipo-info-value rating">${data.star_rating ? `${data.star_rating} ★` : "—"}</div>
       </div>
       <div class="ipo-info-item">
-        <span class="ipo-info-number">3</span>
         <div class="ipo-info-label">Price / Share</div>
         <div class="ipo-info-value">${money(data.price)}</div>
       </div>
       <div class="ipo-info-item">
-        <span class="ipo-info-number">4</span>
         <div class="ipo-info-label">IPO Size</div>
         <div class="ipo-info-value">${plain(data.ipo_size)}</div>
       </div>
       <div class="ipo-info-item">
-        <span class="ipo-info-number">5</span>
         <div class="ipo-info-label">Open</div>
         <div class="ipo-info-value">${formatIPODate(data.open_date)}</div>
       </div>
       <div class="ipo-info-item">
-        <span class="ipo-info-number">6</span>
         <div class="ipo-info-label">Close</div>
         <div class="ipo-info-value">${formatIPODate(data.close_date)}</div>
       </div>
       <div class="ipo-info-item">
-        <span class="ipo-info-number">7</span>
         <div class="ipo-info-label">BoA</div>
         <div class="ipo-info-value">${formatIPODate(data.allotment_date)}</div>
       </div>
       <div class="ipo-info-item">
-        <span class="ipo-info-number">8</span>
         <div class="ipo-info-label">Listing</div>
         <div class="ipo-info-value">${formatIPODate(data.listing_date)}</div>
       </div>
       <div class="ipo-info-item">
-        <span class="ipo-info-number">9</span>
         <div class="ipo-info-label">Updated</div>
         <div class="ipo-info-value">${formatDate(data.fetched_at)}</div>
       </div>
