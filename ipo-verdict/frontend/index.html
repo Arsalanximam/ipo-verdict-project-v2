@@ -2180,6 +2180,39 @@ function renderRecent(items){
     return Number.isFinite(price) && price > 0 && hasDate && (hasSize || hasLot);
   });
 
+  // Show IPOs in calendar order instead of database/scraper order.
+  // Currently open IPOs come first, ordered by their opening date;
+  // upcoming IPOs follow in opening-date order; other statuses come last.
+  const statusPriority = {
+    open: 0,
+    upcoming: 1,
+    closing_soon: 2,
+    allotted: 3,
+    closed: 4
+  };
+
+  validItems.sort((a, b) => {
+    const aStatus = getCurrentIPOStatus(a);
+    const bStatus = getCurrentIPOStatus(b);
+    const aPriority = statusPriority[aStatus] ?? 5;
+    const bPriority = statusPriority[bStatus] ?? 5;
+
+    if(aPriority !== bPriority){
+      return aPriority - bPriority;
+    }
+
+    const aDate = parseIPODate(a.open_date, false);
+    const bDate = parseIPODate(b.open_date, false);
+
+    if(aDate && bDate){
+      return aDate.getTime() - bDate.getTime();
+    }
+    if(aDate) return -1;
+    if(bDate) return 1;
+
+    return String(a.company || '').localeCompare(String(b.company || ''));
+  });
+
   if(!validItems.length){
 
     recentTable.innerHTML = `
