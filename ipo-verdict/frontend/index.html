@@ -880,11 +880,33 @@ tr:last-child td{
 }
 
 .ipo-info-item{
-  flex:1 0 108px;
-  min-width:108px;
-  padding:14px 12px;
+  position:relative;
+  flex:1 0 118px;
+  min-width:118px;
+  padding:14px 12px 13px;
   text-align:center;
   border-right:1px solid var(--line);
+}
+
+.ipo-info-number{
+  position:absolute;
+  top:6px;
+  left:8px;
+  width:17px;
+  height:17px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(242,182,50,.35);
+  border-radius:50%;
+  color:var(--gold);
+  font-size:9px;
+  font-weight:850;
+  line-height:1;
+}
+
+.ipo-info-item .ipo-info-label{
+  padding-left:10px;
+  padding-right:10px;
 }
 
 .ipo-info-item:last-child{
@@ -2073,6 +2095,34 @@ function formatDate(value){
   }catch{
 
     return value;
+
+  }
+}
+
+
+function formatIPODate(value){
+
+  if(!value){
+    return "—";
+  }
+
+  try{
+
+    const parsed = new Date(value);
+
+    if(Number.isNaN(parsed.getTime())){
+      return escapeHTML(value);
+    }
+
+    return parsed.toLocaleDateString("en-IN",{
+      day:"2-digit",
+      month:"short",
+      year:"numeric"
+    });
+
+  }catch{
+
+    return escapeHTML(value);
 
   }
 }
@@ -4418,38 +4468,47 @@ function renderResult(data, history, financials){
 
     <div class="ipo-info-strip" aria-label="IPO key details">
       <div class="ipo-info-item">
+        <span class="ipo-info-number">1</span>
         <div class="ipo-info-label">GMP</div>
         <div class="ipo-info-value ${gmp !== null && gmp !== undefined && Number(gmp) < 0 ? "gmp-negative" : "gmp-positive"}">${gmp !== null && gmp !== undefined ? `${Number(gmp) >= 0 ? "+" : ""}₹${gmp}` : "—"}</div>
       </div>
       <div class="ipo-info-item">
+        <span class="ipo-info-number">2</span>
         <div class="ipo-info-label">Rating</div>
         <div class="ipo-info-value rating">${data.star_rating ? `${data.star_rating} ★` : "—"}</div>
       </div>
       <div class="ipo-info-item">
+        <span class="ipo-info-number">3</span>
         <div class="ipo-info-label">Price / Share</div>
         <div class="ipo-info-value">${money(data.price)}</div>
       </div>
       <div class="ipo-info-item">
+        <span class="ipo-info-number">4</span>
         <div class="ipo-info-label">IPO Size</div>
         <div class="ipo-info-value">${plain(data.ipo_size)}</div>
       </div>
       <div class="ipo-info-item">
+        <span class="ipo-info-number">5</span>
         <div class="ipo-info-label">Open</div>
-        <div class="ipo-info-value">${plain(data.open_date)}</div>
+        <div class="ipo-info-value">${formatIPODate(data.open_date)}</div>
       </div>
       <div class="ipo-info-item">
+        <span class="ipo-info-number">6</span>
         <div class="ipo-info-label">Close</div>
-        <div class="ipo-info-value">${plain(data.close_date)}</div>
+        <div class="ipo-info-value">${formatIPODate(data.close_date)}</div>
       </div>
       <div class="ipo-info-item">
+        <span class="ipo-info-number">7</span>
         <div class="ipo-info-label">BoA</div>
-        <div class="ipo-info-value">${plain(data.allotment_date)}</div>
+        <div class="ipo-info-value">${formatIPODate(data.allotment_date)}</div>
       </div>
       <div class="ipo-info-item">
+        <span class="ipo-info-number">8</span>
         <div class="ipo-info-label">Listing</div>
-        <div class="ipo-info-value">${plain(data.listing_date)}</div>
+        <div class="ipo-info-value">${formatIPODate(data.listing_date)}</div>
       </div>
       <div class="ipo-info-item">
+        <span class="ipo-info-number">9</span>
         <div class="ipo-info-label">Updated</div>
         <div class="ipo-info-value">${formatDate(data.fetched_at)}</div>
       </div>
