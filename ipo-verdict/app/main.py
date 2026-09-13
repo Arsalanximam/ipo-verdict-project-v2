@@ -3,7 +3,7 @@ import re
 from html.parser import HTMLParser
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from statistics import median
 
 from fastapi import FastAPI, HTTPException
@@ -15,7 +15,7 @@ from app.database import init_db, SessionLocal
 from app.models import IPOSnapshot
 from app.schemas import IPOResponse
 from app.service import get_or_refresh
-from app.config import CORS_ORIGINS
+from app.config import CORS_ORIGINS, CACHE_TTL_MINUTES
 
 
 # ---------------------------------------------------------
@@ -1499,6 +1499,73 @@ def tracked_ipos():
 
     finally:
         db.close()
+
+
+# ---------------------------------------------------------
+# CACHE / FRESHNESS METADATA
+# ---------------------------------------------------------
+
+def _cache_status():
+    db = SessionLocal()
+    try:
+        latest = (
+            db.query(IPOSnapshot)
+            .order_by(IPOSnapshot.fetched_at.desc())
+            .first()
+        )
+
+        if not latest or not latest.fetched_at:
+            return {
+                "status": "empty",
+                "latest_fetched_at": None,
+                "age_seconds": None,
+                "age_minutes": None,
+                "is_stale": True,
+                "ttl_minutes": CACHE_TTL_MINUTES,
+            }
+
+        fetched = latest.fetched_at
+        if fetched.tzinfo is None:
+            fetched = fetched.replace(tzinfo=timezone.utc)
+
+        now = datetime.now(timezone.utc)
+        age_seconds = max(0, int((now - fetched).total_seconds()))
+
+        return {
+            "status": "ok",
+            "latest_fetched_at": fetched.isoformat(),
+            "age_seconds": age_seconds,
+            "age_minutes": round(age_seconds / 60, 2),
+            "is_stale": age_seconds >= CACHE_TTL_MINUTES * 60,
+            "ttl_minutes": CACHE_TTL_MINUTES,
+        }
+    finally:
+        db.close()
+
+
+@app.get("/api/cache-status")
+def cache_status():
+    """Expose cache freshness without triggering any external scrape."""
+    return _cache_status()
+
+
+# ---------------------------------------------------------
+# CACHE RESPONSE HEADERS
+# ---------------------------------------------------------
+
+@app.middleware("http")
+async def add_cache_metadata_headers(request, call_next):
+    response = await call_next(request)
+
+    if request.url.path.startswith("/api/") and request.url.path != "/api/cache-status":
+        status = _cache_status()
+        response.headers["X-Cache-Status"] = status["status"]
+        response.headers["X-Cache-Stale"] = "true" if status["is_stale"] else "false"
+        if status["latest_fetched_at"]:
+            response.headers["X-Data-Fetched-At"] = status["latest_fetched_at"]
+        response.headers["X-Cache-TTL-Minutes"] = str(status["ttl_minutes"])
+
+    return response
 
 
 # ---------------------------------------------------------
