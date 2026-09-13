@@ -1228,6 +1228,9 @@ tr:last-child td{
   border-radius:16px;
   background:linear-gradient(135deg,rgba(245,181,43,.09),rgba(255,255,255,.02));
 }
+.analysis-back{display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03);color:var(--muted);font-family:ui-monospace,monospace;font-size:10px;font-weight:800;cursor:pointer}
+.analysis-back:hover{color:var(--text);border-color:var(--gold)}
+
 .analysis-top{
   display:grid;
   grid-template-columns:1fr auto;
@@ -4168,6 +4171,7 @@ function renderResult(data, history, financials){
   resultBox.innerHTML = `
 
     <div class="analysis-hero">
+      <button type="button" class="analysis-back" id="backToDashboard">← Back to Dashboard</button>
       <div class="analysis-top">
         <div>
           <div class="analysis-kicker">IPO Verdict Analysis</div>
@@ -4472,6 +4476,18 @@ function renderResult(data, history, financials){
   `;
 
   resultBox.classList.add("show");
+
+  const backButton = document.getElementById("backToDashboard");
+  if(backButton){
+    backButton.addEventListener("click", () => {
+      resultBox.classList.remove("show");
+      resultBox.innerHTML = "";
+      errorBox.classList.remove("show");
+      input.value = "";
+      window.scrollTo({top:0, behavior:"smooth"});
+    });
+  }
+
   renderHistoryCharts(history);
 
   resultBox.scrollIntoView({behavior:"smooth",block:"start"});
