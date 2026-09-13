@@ -15,7 +15,6 @@ from app.database import init_db, SessionLocal
 from app.models import IPOSnapshot
 from app.schemas import IPOResponse
 from app.service import get_or_refresh
-from app.scheduler import start_scheduler
 from app.config import CORS_ORIGINS
 
 
@@ -55,7 +54,6 @@ app.add_middleware(
 @app.on_event("startup")
 def startup_event():
     init_db()
-    start_scheduler()
 
 
 # ---------------------------------------------------------
