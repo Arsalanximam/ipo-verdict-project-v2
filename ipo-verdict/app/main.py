@@ -1,23 +1,22 @@
 import logging
-import os
-import hmac
-import threading
 import re
 from html.parser import HTMLParser
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
-from datetime import datetime, date, timedelta, timezone
+from datetime import datetime, date, timedelta
 from statistics import median
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from app.database import init_db, SessionLocal
 from app.models import IPOSnapshot
+from app.schemas import IPOResponse
 from app.service import get_or_refresh
-from app.config import CORS_ORIGINS, CACHE_TTL_MINUTES
+from app.scheduler import start_scheduler
+from app.config import CORS_ORIGINS
 
 
 # ---------------------------------------------------------
@@ -56,61 +55,7 @@ app.add_middleware(
 @app.on_event("startup")
 def startup_event():
     init_db()
-
-
-# ---------------------------------------------------------
-# FREE EXTERNAL CRON TRIGGER
-# ---------------------------------------------------------
-
-_worker_lock = threading.Lock()
-
-
-def _run_worker_background():
-    """Run the existing one-shot worker outside the API request path."""
-    if not _worker_lock.acquire(blocking=False):
-        logger.info("Worker refresh already running; skipping overlapping run")
-        return
-
-    try:
-        from app.worker import run_once
-        saved, failed = run_once()
-        logger.info(
-            "Background worker refresh complete: %d saved, %d failed",
-            saved,
-            failed,
-        )
-    except Exception:
-        logger.exception("Background worker refresh failed")
-    finally:
-        _worker_lock.release()
-
-
-@app.get("/api/worker")
-def trigger_worker(
-    background_tasks: BackgroundTasks,
-    token: str = "",
-):
-    """Secure trigger for a free external cron service."""
-    configured_token = os.getenv("WORKER_CRON_TOKEN", "").strip()
-
-    if not configured_token:
-        raise HTTPException(503, "Worker trigger is not configured")
-
-    if not token or not hmac.compare_digest(token, configured_token):
-        raise HTTPException(403, "Invalid worker token")
-
-    if _worker_lock.locked():
-        return {
-            "status": "already_running",
-            "message": "Worker refresh is already running",
-        }
-
-    background_tasks.add_task(_run_worker_background)
-
-    return {
-        "status": "started",
-        "message": "Worker refresh started in background",
-    }
+    start_scheduler()
 
 
 # ---------------------------------------------------------
@@ -1045,6 +990,15 @@ def dashboard():
                 row.status,
             )
 
+            # Subscription is only meaningful after the IPO opens.
+            # Upcoming IPOs must not display stale/historical subscription
+            # multiples from an earlier snapshot.
+            subscription = (
+                None
+                if status == "upcoming"
+                else row.sub_overall
+            )
+
             closing_soon = is_closing_soon(
                 row.open_date,
                 row.close_date,
@@ -1105,7 +1059,7 @@ def dashboard():
                         row.gmp_as_of,
 
                     "sub_overall":
-                        row.sub_overall,
+                        subscription,
 
                     "sub_qib":
                         row.sub_qib,
@@ -1556,73 +1510,6 @@ def tracked_ipos():
 
     finally:
         db.close()
-
-
-# ---------------------------------------------------------
-# CACHE / FRESHNESS METADATA
-# ---------------------------------------------------------
-
-def _cache_status():
-    db = SessionLocal()
-    try:
-        latest = (
-            db.query(IPOSnapshot)
-            .order_by(IPOSnapshot.fetched_at.desc())
-            .first()
-        )
-
-        if not latest or not latest.fetched_at:
-            return {
-                "status": "empty",
-                "latest_fetched_at": None,
-                "age_seconds": None,
-                "age_minutes": None,
-                "is_stale": True,
-                "ttl_minutes": CACHE_TTL_MINUTES,
-            }
-
-        fetched = latest.fetched_at
-        if fetched.tzinfo is None:
-            fetched = fetched.replace(tzinfo=timezone.utc)
-
-        now = datetime.now(timezone.utc)
-        age_seconds = max(0, int((now - fetched).total_seconds()))
-
-        return {
-            "status": "ok",
-            "latest_fetched_at": fetched.isoformat(),
-            "age_seconds": age_seconds,
-            "age_minutes": round(age_seconds / 60, 2),
-            "is_stale": age_seconds >= CACHE_TTL_MINUTES * 60,
-            "ttl_minutes": CACHE_TTL_MINUTES,
-        }
-    finally:
-        db.close()
-
-
-@app.get("/api/cache-status")
-def cache_status():
-    """Expose cache freshness without triggering any external scrape."""
-    return _cache_status()
-
-
-# ---------------------------------------------------------
-# CACHE RESPONSE HEADERS
-# ---------------------------------------------------------
-
-@app.middleware("http")
-async def add_cache_metadata_headers(request, call_next):
-    response = await call_next(request)
-
-    if request.url.path.startswith("/api/") and request.url.path != "/api/cache-status":
-        status = _cache_status()
-        response.headers["X-Cache-Status"] = status["status"]
-        response.headers["X-Cache-Stale"] = "true" if status["is_stale"] else "false"
-        if status["latest_fetched_at"]:
-            response.headers["X-Data-Fetched-At"] = status["latest_fetched_at"]
-        response.headers["X-Cache-TTL-Minutes"] = str(status["ttl_minutes"])
-
-    return response
 
 
 # ---------------------------------------------------------
