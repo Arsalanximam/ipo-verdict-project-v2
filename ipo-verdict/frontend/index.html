@@ -2565,7 +2565,7 @@ let currentGmpMarketFilter = "all";
 
 function renderRecent(items){
 currentGmpSourceItems = Array.isArray(items) ? items : [];
-const validItems = dedupeCurrentGmpItems(items).filter(item => {
+let validItems = dedupeCurrentGmpItems(items).filter(item => {
 // Once the IPO is listed, it belongs in the analysis/history sections
 // below and should automatically disappear from Current IPO GMP.
 if(getCurrentIPOStatus(item) === "listed") return false;
@@ -5129,48 +5129,6 @@ rateIPO
 
 loadDashboard();
 
-</script>
-
-<script>
-(function(){
-let currentGmpCategoryFilter = 'ALL';
-
-function categoryOfElement(el){
-const text = (el.textContent || '').toUpperCase();
-return text.includes('SME') ? 'SME' : 'MAINBOARD';
-}
-
-function applyCurrentGmpCategoryFilter(){
-document.querySelectorAll('#currentGmpTableView tbody tr, #currentGmpGrid > *').forEach(el => {
-el.dataset.currentGmpCategory = el.dataset.currentGmpCategory || categoryOfElement(el);
-el.style.display =
-currentGmpCategoryFilter === 'ALL' ||
-el.dataset.currentGmpCategory === currentGmpCategoryFilter ? '' : 'none';
-});
-
-document.querySelectorAll('.current-gmp-category-btn').forEach(btn => {
-btn.classList.toggle('active', btn.dataset.gmpCategory === currentGmpCategoryFilter);
-});
-}
-
-document.addEventListener('click', function(event){
-const btn = event.target.closest('.current-gmp-category-btn');
-if(!btn) return;
-currentGmpCategoryFilter = btn.dataset.gmpCategory || 'ALL';
-applyCurrentGmpCategoryFilter();
-});
-
-const observer = new MutationObserver(applyCurrentGmpCategoryFilter);
-function init(){
-const table = document.getElementById('currentGmpTableView');
-const grid = document.getElementById('currentGmpGrid');
-if(table) observer.observe(table, {childList:true, subtree:true});
-if(grid) observer.observe(grid, {childList:true, subtree:true});
-applyCurrentGmpCategoryFilter();
-}
-if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-else init();
-})();
 </script>
 
 </body>
