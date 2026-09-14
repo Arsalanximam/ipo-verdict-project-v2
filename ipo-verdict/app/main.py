@@ -16,7 +16,6 @@ from fastapi.responses import FileResponse
 
 from app.database import init_db, SessionLocal
 from app.models import IPOSnapshot
-from app.schemas import IPOResponse
 from app.service import get_or_refresh
 from app.config import CORS_ORIGINS, CACHE_TTL_MINUTES
 
